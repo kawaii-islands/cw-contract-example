@@ -7,3 +7,5 @@
 
 # Build results
 artifacts/
+contracts/nameservice/.oraid
+contracts/nameservice/artifacts

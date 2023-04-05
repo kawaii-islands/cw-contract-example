@@ -62,3 +62,35 @@ docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.12.3 ./contracts/*/
 ```
+
+
+### Build with oraichain
+- Doc gốc ```https://docs.cosmwasm.com/docs/getting-started/compile-contract/```
+- B1: Cài đặt các thư viện theo thằng này https://docs.cosmwasm.com/docs/getting-started/installation nhưng thay cái repo
+  git clone https://github.com/CosmWasm/wasmd.git =>  https://github.com/oraichain/orai để cài thay thế cho wasmd vì mình sẽ dùng oraid. Cách cài thư viện này giống bọn này https://docs.cosmwasm.com/docs/getting-started/installation
+- B2: Compile https://docs.cosmwasm.com/docs/getting-started/compile-contract
+```angular2html
+1. cd contracts/nameservice
+2. docker run --rm -v "$(pwd)":/code \
+--mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+--mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+cosmwasm/rust-optimizer:0.12.11
+
+- Sau khi chạy xong thấy có thư mục build artifacts
+```
+- B3: Add ví orai vào oraid cho việc tương tác nếu cần kí
+```angular2html
+- oraid keys add  name_wallet --recover
+vd: oraid keys add  OraiWallet2023 --recover
+- xong em nhập mnemonic vào và passphrase
+- có thể xem với lệnh `orai keys show -a OraiWallet2023`
+```
+
+- B4: Deploy https://docs.cosmwasm.com/docs/getting-started/interact-with-contract
+```angular2html
+RES=$(/Users/admin/go/bin/oraid tx wasm store artifacts/cw_nameservice.wasm --from OraiWallet2023 --node https://testnet-rpc.orai.io:443 --chain-id Oraichain-testnet --gas-prices 0.25orai --gas auto --gas-adjustment 1.3 -y --output json -b block)
+echo $RES
+```
+- echo  $RES ra sẽ thấy transaction mới tạo, vào scan để xem codeId và address smc cho nhanh
+- vd đã tạo : https://scan.orai.io/txs/899BC1AB6CAC2F79986A974A0E6D01C887FDF6E43308649CB115627A8AEDBCC3
+- Các bước sau tùy vào sử dụng vì khi có address rồi thì dùng nodejs call
